@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD con Firebase</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="#">Panes</a></li>
+            <li><a href="#">Tortas</a></li>
+            <li><a href="#">Tartas</a></li>
+            <li><a href="#" id="adminLink">Admin</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <img src="imagenes/logo.jpg" alt="">
+    </header>
+
+    <div class="contenedor" id="datos"></div>
+
+    <script src="codigo.js" type="module"></script>
+    <script>
+        // Función para manejar la autenticación del administrador
+        function authenticateAdmin() {
+            // Pide al usuario que ingrese una contraseña
+            var password = prompt("Ingrese la contraseña:");
+
+            // Verifica si la contraseña ingresada es correcta
+            if (password === "pan12345") { // Cambia "tu_contraseña_aqui" por tu contraseña real
+                // Si la contraseña es correcta, redirige al usuario a la página de administrador
+                window.location.href = "cruddatos.html";
+            } else {
+                // Si la contraseña es incorrecta, muestra un mensaje de error
+                alert("Contraseña incorrecta. Inténtalo de nuevo."); // Utiliza console.log en lugar de alert
+            }
+        }
+
+        // Asigna un evento de clic al enlace de administrador para manejar la autenticación
+        document.getElementById("adminLink").addEventListener("click", function(event) {
+            event.preventDefault(); // Evita que el enlace se ejecute por defecto
+            authenticateAdmin(); // Llama a la función para manejar la autenticación del administrador
+        });
+    </script>
+</body>
+</html>

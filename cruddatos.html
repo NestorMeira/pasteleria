@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD con Firebase</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+   <button id="pagPrincipal"><a href="index.html">Ir a página principal</a></button>
+   
+    <h1>Subir productos</h1>
+    <form id="formulario">
+        <label for="titulo">Título:</label>
+        <input type="text" id="titulo" required><br>
+        <label for="descripcion" id="descripcion">Descripción:</label>
+        <input type="text" id="descripcion" required><br>
+        <label for="imagen">Imagen:</label>
+        <input type="file" id="imagen" accept="image/*">  <br>      
+        <label for="precio">Precio:</label>
+        <input type="number" id="precio" required><br>
+        <input type="hidden" id="docId">
+        <button type="submit">Agregar</button>
+    </form>
+    <ul id="listaDatos"></ul>
+    
+    <script src="codigo.js" type="module"></script>
+</body>
+</html>
