@@ -7,23 +7,155 @@
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
-   <button id="pagPrincipal"><a href="index.html">Ir a página principal</a></button>
-   
+
+    <button id="pagPrincipal"><a href="index.html">Ir a página principal</a></button>
+
     <h1>Subir productos</h1>
     <form id="formulario">
         <label for="titulo">Título:</label>
         <input type="text" id="titulo" required><br>
-        <label for="descripcion" id="descripcion">Descripción:</label>
-        <input type="text" id="descripcion" required><br>
+        <label for="descripcion">Descripción:</label>
+        <input type="text" id="descripcionInput" required><br> 
         <label for="imagen">Imagen:</label>
         <input type="file" id="imagen" accept="image/*">  <br>      
         <label for="precio">Precio:</label>
         <input type="number" id="precio" required><br>
         <input type="hidden" id="docId">
-        <button type="submit">Agregar</button>
+        <button type="submit">Agregar producto</button>
     </form>
+    
     <ul id="listaDatos"></ul>
     
-    <script src="codigo.js" type="module"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        // Tu configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBYPD9Th0QLwfvN3ss-UcTYeQ8LBt35Vrc",
+            authDomain: "crud-275cd.firebaseapp.com",
+            projectId: "crud-275cd",
+            storageBucket: "crud-275cd.appspot.com",
+            messagingSenderId: "382243670639",
+            appId: "1:382243670639:web:9daa13abda6161ce495b9a"
+        };
+
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        const formulario = document.getElementById('formulario');
+        const listaDatos = document.getElementById('listaDatos');
+        const fileInput = document.getElementById('imagen');
+
+        // Elimina un registro
+        async function eliminarRegistro(id) {
+            const docRef = doc(collection(db, 'pruebas'), id);
+            try {
+                await deleteDoc(docRef);
+                console.log("Document deleted successfully!");
+            } catch (error) {
+                console.error("Error deleting document:", error);
+            }
+            fetchData();
+        }
+
+        // Obtiene y muestra datos
+        async function fetchData() {
+            listaDatos.innerHTML = '';
+
+            const querySnapshot = await getDocs(collection(db, 'pruebas'));
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const listItem = document.createElement('li');
+                listItem.classList.add('lista');
+                listItem.innerHTML = `
+                    <h2>${data.titulo}</h2> <p>${data.descripcion}</p>
+                    <span>$${data.precio}</span>
+                    <img src="${data.imagen}" alt="Imagen"> <!-- Muestra la imagen -->
+                    <button class="editar-btn" data-id="${doc.id}" data-titulo="${data.titulo}" data-descripcion="${data.descripcion}" data-imagen="${data.imagen}" data-precio="${data.precio}">Editar</button>
+                    <button class="eliminar-btn" data-id="${doc.id}">Eliminar</button>
+                `;
+                listaDatos.appendChild(listItem);
+
+                const editarButton = listItem.querySelector('.editar-btn');
+                editarButton.addEventListener('click', editarRegistro);
+
+                const eliminarButton = listItem.querySelector('.eliminar-btn');
+                eliminarButton.addEventListener('click', () => eliminarRegistro(doc.id));
+            });
+        }
+
+      // Edita un registro
+async function editarRegistro(event) {
+    const id = event.currentTarget.getAttribute('data-id');
+    const titulo = event.currentTarget.getAttribute('data-titulo');
+    const descripcion = event.currentTarget.getAttribute('data-descripcion');
+    const precio = parseFloat(event.currentTarget.getAttribute('data-precio'));
+
+    document.getElementById('titulo').value = titulo;
+    document.getElementById('descripcionInput').value = descripcion;
+    document.getElementById('precio').value = precio;
+    document.getElementById('docId').value = id;
+
+    document.querySelector('button[type="submit"]').innerText = "Guardar cambios";
+    scroll(top)
+  // Cambia el texto del botón de enviar
+}
+
+// Agrega un evento al formulario
+formulario.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const titulo = document.getElementById('titulo').value;
+    const descripcion = document.getElementById('descripcionInput').value;
+    const precio = parseFloat(document.getElementById('precio').value);
+    const docId = document.getElementById('docId').value;
+
+    let imagenUrl = '';
+    const file = fileInput.files[0];
+    if (file) {
+        const storageRef = ref(storage, 'imagenes/' + file.name);
+        await uploadBytes(storageRef, file);
+        imagenUrl = await getDownloadURL(storageRef);
+    }
+
+    if (docId) { // Si hay un ID, significa que estamos editando un producto existente
+        try {
+            await updateDoc(doc(collection(db, 'pruebas'), docId), {
+                titulo,
+                descripcion,
+                precio,
+                imagen: imagenUrl
+            });
+            console.log("Producto actualizado correctamente!");
+            formulario.reset(); // Limpiar el formulario después de editar el producto
+       
+        location.reload();
+ 
+            fetchData(); // Actualiza la lista de productos
+        } catch (error) {
+            console.error("Error al actualizar el producto:", error);
+        }
+    } else { // Si no hay un ID, significa que estamos agregando un nuevo producto
+        try {
+            await addDoc(collection(db, 'pruebas'), {
+                titulo,
+                descripcion,
+                precio,
+                imagen: imagenUrl
+            });
+            console.log("Producto agregado correctamente!");
+            formulario.reset(); // Limpiar el formulario después de agregar el producto
+            fetchData(); // Actualiza la lista de productos
+        } catch (error) {
+            console.error("Error al agregar el producto:", error);
+        }
+    }
+});
+fetchData()
+    </script>
 </body>
 </html>

@@ -2,7 +2,7 @@
     margin: 0;
     padding: 0;
 }
-#descripcion{
+#descripcionInput{
     height: 100px;
     width: 200px;
 }
@@ -13,6 +13,9 @@
     align-items: center;
     padding: 1rem;
     margin-top: 30px;
+}
+#listaDatos img{
+    width: 350px;
 }
 #pagPrincipal{
     width: 195px;
@@ -105,7 +108,7 @@ nav ul li a{
 .lista h2{
     text-align: center;
     padding:10px 0;
-    text-shadow:2px 1px 2px rgba(0, 0, 0, 0.271);
+    text-shadow:2px 1px 2px rgba(0, 0, 0, 0.109);
 }
 .lista p{
 padding: 10px 1rem;

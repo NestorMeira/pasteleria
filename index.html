@@ -26,8 +26,57 @@
         <img src="imagenes/fondo.jpg" alt="">
     </footer>
 
-    <script src="codigo.js" type="module"></script>
-    <script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+// Tu configuración de Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyBYPD9Th0QLwfvN3ss-UcTYeQ8LBt35Vrc",
+    authDomain: "crud-275cd.firebaseapp.com",
+    projectId: "crud-275cd",
+    storageBucket: "crud-275cd.appspot.com",
+    messagingSenderId: "382243670639",
+    appId: "1:382243670639:web:9daa13abda6161ce495b9a"
+};
+
+// Inicializa Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+const datos= document.getElementById('datos')
+
+
+
+
+async function fetchDat() {
+
+    datos.innerHTML = '';
+
+    const querySnapshot = await getDocs(collection(db, 'pruebas'));
+
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const listItem = document.createElement('div');
+         listItem.classList.add('lista');
+        listItem.innerHTML = `
+           <div class='foto'>
+            <img src="${data.imagen}" alt="Imagen">
+            </div>
+            <div class='info'> 
+            <h2>${data.titulo}</h2>
+            <p>${data.descripcion}</p>  
+            <span>$ ${data.precio}</span>
+            </div>
+        `;
+        datos.appendChild(listItem);
+    });
+}
+fetchDat()
+
+
+
         // Función para manejar la autenticación del administrador
         function authenticateAdmin() {
             // Pide al usuario que ingrese una contraseña
